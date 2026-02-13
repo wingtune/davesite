@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAVE KNIVES | Handcrafted Blades & Education</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dave: {
+                            cream: '#F5F5F0',
+                            ink: '#1A1A1A',
+                            rust: '#B7410E',
+                            sage: '#87A878',
+                            stone: '#8C8C8C',
+                            blush: '#E8D5C4'
+                        }
+                    },
+                    fontFamily: {
+                        display: ['Syne', 'sans-serif'],
+                        body: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #F5F5F0;
+            color: #1A1A1A;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Brutalist Typography */
+        .mega-text {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+        }
+
+        .outline-text {
+            -webkit-text-stroke: 2px #1A1A1A;
+            color: transparent;
+        }
+
+        .outline-text:hover {
+            color: #1A1A1A;
+            -webkit-text-stroke: 0px;
+        }
+
+        /* Custom Cursor */
+        .cursor-dot {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: #B7410E;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease;
+        }
+
+        .cursor-dot.hover {
+            transform: scale(3);
+        }
+
+        /* Noise Texture */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Marquee */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Image Treatments */
+        .img-duotone {
+            filter: grayscale(100%) contrast(1.2);
+            transition: all 0.5s ease;
+        }
+
+        .img-duotone:hover {
+            filter: grayscale(0%) contrast(1);
+        }
+
+        /* Sticker Style */
+        .sticker {
+            transform: rotate(-2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .sticker:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        /* Sharp Corners */
+        .brutal-shadow {
+            box-shadow: 6px 6px 0px #1A1A1A;
+            transition: all 0.2s ease;
+        }
+
+        .brutal-shadow:hover {
+            box-shadow: 2px 2px 0px #1A1A1A;
+            transform: translate(4px, 4px);
+        }
+
+        .brutal-shadow-rust {
+            box-shadow: 6px 6px 0px #B7410E;
+            transition: all 0.2s ease;
+        }
+
+        .brutal-shadow-rust:hover {
+            box-shadow: 2px 2px 0px #B7410E;
+            transform: translate(4px, 4px);
+        }
+
+        /* Accordion */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .accordion-content.active {
+            max-height: 500px;
+        }
+
+        /* Blade SVG Animation */
+        .blade-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 3s ease forwards;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Mobile */
+        @media (pointer: coarse) {
+            .cursor-dot {
+                display: none;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-dave-cream">
+
+    <!-- Noise Overlay -->
+    <div class="noise"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-dave-cream border-b-2 border-dave-ink">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-display font-bold tracking-tighter hover:text-dave-rust transition-colors">
+                    DAVE KNIVES
+                </a>
+                
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#blades" class="text-sm font-bold uppercase tracking-widest hover:text-dave-rust transition-colors hoverable">Blades</a>
+                    <a href="#sharpening" class="text-sm font-bold uppercase tracking-widest hover:text-dave-rust transition-colors hoverable">Sharpening</a>
+                    <a href="#courses" class="text-sm font-bold uppercase tracking-widest hover:text-dave-rust transition-colors hoverable">Courses</a>
+                    <a href="#about" class="text-sm font-bold uppercase tracking-widest hover:text-dave-rust transition-colors hoverable">About</a>
+                    <button onclick="openModal()" class="bg-dave-ink text-dave-cream px-6 py-3 font-bold uppercase text-sm tracking-widest brutal-shadow hoverable">
+                        Contact
+                    </button>
+                </div>
+
+                <button class="md:hidden hoverable" onclick="toggleMenu()">
+                    <i data-lucide="menu" class="w-8 h-8"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-dave-rust transform translate-x-full transition-transform duration-300 md:hidden">
+        <div class="flex flex-col items-start justify-center h-full px-8 space-y-8">
+            <button onclick="toggleMenu()" class="absolute top-6 right-6 text-dave-cream">
+                <i data-lucide="x" class="w-8 h-8"></i>
+            </button>
+            <a href="#blades" onclick="toggleMenu()" class="text-4xl font-display font-bold text-dave-cream">Blades</a>
+            <a href="#sharpening" onclick="toggleMenu()" class="text-4xl font-display font-bold text-dave-cream">Sharpening</a>
+            <a href="#courses" onclick="toggleMenu()" class="text-4xl font-display font-bold text-dave-cream">Courses</a>
+            <a href="#about" onclick="toggleMenu()" class="text-4xl font-display font-bold text-dave-cream">About</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen pt-24 flex flex-col justify-center relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <svg width="100%" height="100%">
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1A1A1A" stroke-width="1"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#grid)"/>
+            </svg>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+                <!-- Left Content -->
+                <div class="lg:col-span-7 space-y-8">
+                    <div class="inline-block bg-dave-rust text-dave-cream px-4 py-2 font-bold text-sm tracking-widest uppercase sticker">
+                        Est. 2020 — Cape Town
+                    </div>
+                    
+                    <h1 class="mega-text text-7xl md:text-9xl lg:text-[12rem] text-dave-ink">
+                        SHARP<br>
+                        <span class="outline-text">THINKING</span>
+                    </h1>
+                    
+                    <p class="text-xl md:text-2xl max-w-xl font-light leading-relaxed">
+                        Handcrafted blades for people who care about what they hold. 
+                        Sharpening services that restore the edge. Courses that teach the craft.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <a href="#blades" class="bg-dave-ink text-dave-cream px-8 py-4 font-bold uppercase tracking-widest brutal-shadow hoverable inline-flex items-center gap-3">
+                            View Blades
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#courses" class="border-2 border-dave-ink text-dave-ink px-8 py-4 font-bold uppercase tracking-widest hover:bg-dave-ink hover:text-dave-cream transition-colors hoverable">
+                            Book Course
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Image -->
+                <div class="lg:col-span-5 relative">
+                    <div class="aspect-[3/4] bg-dave-sage relative brutal-shadow">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg viewBox="0 0 200 400" class="w-3/4 h-3/4">
+                                <path class="blade-path" d="M100 20 L180 100 L180 300 Q180 380 100 380 Q20 380 20 300 L20 100 Z" 
+                                      fill="none" stroke="#1A1A1A" stroke-width="3"/>
+                                <line x1="20" y1="100" x2="180" y2="100" stroke="#1A1A1A" stroke-width="3"/>
+                                <rect x="60" y="20" width="80" height="60" fill="#1A1A1A"/>
+                            </svg>
+                        </div>
+                        <div class="absolute bottom-4 left-4 bg-dave-cream px-3 py-1 font-mono text-xs">
+                            FIG. 01 — CHEF'S PROFILE
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-6 flex items-center gap-4">
+            <div class="w-px h-16 bg-dave-ink"></div>
+            <span class="font-mono text-xs uppercase tracking-widest rotate-90 origin-left translate-x-4">Scroll</span>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="bg-dave-ink text-dave-cream py-4 border-y-2 border-dave-ink">
+        <div class="marquee-container">
+            <div class="marquee-content font-display font-bold text-4xl md:text-6xl">
+                <span class="mx-8">HANDCRAFTED</span>
+                <span class="mx-8 text-dave-rust">SHARPENED</span>
+                <span class="mx-8">EDUCATION</span>
+                <span class="mx-8 text-dave-sage">RESTORATION</span>
+                <span class="mx-8">HANDCRAFTED</span>
+                <span class="mx-8 text-dave-rust">SHARPENED</span>
+                <span class="mx-8">EDUCATION</span>
+                <span class="mx-8 text-dave-sage">RESTORATION</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blades Section -->
+    <section id="blades" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+                <div>
+                    <span class="font-mono text-sm text-dave-rust uppercase tracking-widest">01 / Available Work</span>
+                    <h2 class="mega-text text-6xl md:text-8xl mt-4">THE BLADES</h2>
+                </div>
+                <p class="max-w-md text-lg font-light">
+                    Each knife is made to order. No two are identical. 
+                    Materials sourced locally where possible.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-dave-ink">
+                <!-- Knife 1 -->
+                <div class="bg-dave-cream p-8 group hoverable">
+                    <div class="aspect-square bg-dave-blush mb-6 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg viewBox="0 0 200 50" class="w-3/4">
+                                <path d="M10 25 L180 25 L190 20 L190 30 L180 25" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+                                <rect x="5" y="20" width="15" height="10" fill="#1A1A1A"/>
+                            </svg>
+                        </div>
+                        <div class="absolute top-4 right-4 bg-dave-ink text-dave-cream px-3 py-1 font-mono text-xs">
+                            #001
+                        </div>
+                    </div>
+                    <h3 class="font-display font-bold text-2xl mb-2">Gyuto 210mm</h3>
+                    <p class="text-dave-stone text-sm mb-4">Carbon steel, walnut handle</p>
+                    <div class="flex justify-between items-center">
+                        <span class="font-display font-bold text-2xl">R4,500</span>
+                        <button onclick="openModal('Gyuto 210mm')" class="text-sm font-bold uppercase tracking-widest hover:text-dave-rust transition-colors">
+                            Enquire →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Knife 2 -->
+                <div class="bg-dave-cream p-8 group hoverable">
+                    <div class="aspect-square bg-dave-sage/20 mb-6 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg viewBox="0 0 150 60" class="w-2/3">
+                                <path d="M10 30 L130 30 L140 25 L140 35 L130 30" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+                                <rect x="5" y="25" width="12" height="10" fill="#1A1A1A"/>
+                            </svg>
+                        </div>
+                        <div class="absolute top-4 right-4 bg-dave-rust text-dave-cream px-3 py-1 font-mono text-xs">
+                            SOLD
+                        </div>
+                    </div>
+                    <h3 class="font-display font-bold text-2xl mb-2">Petty 150mm</h3>
+                    <p class="text-dave-stone text-sm mb-4">Stainless, oak handle</p>
+                    <div class="flex justify-between items-center">
+                        <span class="font-display font-bold text-2xl text-dave-stone line-through">R2,800</span>
+                        <span class="text-sm font-bold uppercase tracking-widest text-dave-stone">Waitlist →</span>
+                    </div>
+                </div>
+
+                <!-- Knife 3 -->
+                <div class="bg-dave-cream p-8 group hoverable">
+                    <div class="aspect-square bg-dave-rust/10 mb-6 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg viewBox="0 0 180 80" class="w-3/4">
+                                <path d="M10 40 L160 40 L170 30 L170 50 L160 40" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+                                <rect x="5" y="35" width="14" height="10" fill="#1A1A1A"/>
+                            </svg>
+                        </div>
+                        <div class="absolute top-4 right-4 bg-dave-ink text-dave-cream px-3 py-1 font-mono text-xs">
+                            #003
+                        </div>
+                    </div>
+                    <h3 class="font-display font-bold text-2xl mb-2">Bunka 180mm</h3>
+                    <p class="text-dave-stone text-sm mb-4">Damascus, ebony handle</p>
+                    <div class="flex justify-between items-center">
+                        <span class="font-display font-bold text-2xl">R6,200</span>
+                        <button onclick="openModal('Bunka 180mm')" class="text-sm font-bold uppercase tracking-widest hover:text-dave-rust transition-colors">
+                            Enquire →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <button class="border-2 border-dave-ink px-8 py-4 font-bold uppercase tracking-widest hover:bg-dave-ink hover:text-dave-cream transition-colors hoverable">
+                    View Full Catalogue
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sharpening Section -->
+    <section id="sharpening" class="py-32 bg-dave-ink text-dave-cream relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <span class="font-mono text-sm text-dave-rust uppercase tracking-widest">02 / Services</span>
+                    <h2 class="mega-text text-6xl md:text-8xl mt-4 mb-8">EDGE<br>RESTORATION</h2>
+                    
+                    <p class="text-xl font-light mb-8 leading-relaxed text-dave-stone">
+                        Most knives don't need replacing. They need sharpening. 
+                        Bring your dull blades back to life with professional 
+                        water stone sharpening.
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="border-b border-dave-stone/30 pb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-display font-bold text-2xl">Basic Sharpening</h3>
+                                <span class="font-display font-bold text-2xl text-dave-rust">R150</span>
+                            </div>
+                            <p class="text-dave-stone text-sm">Kitchen knives, scissors, pocket knives. 1000/6000 grit finish.</p>
+                        </div>
+
+                        <div class="border-b border-dave-stone/30 pb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-display font-bold text-2xl">Premium Edge</h3>
+                                <span class="font-display font-bold text-2xl text-dave-rust">R280</span>
+                            </div>
+                            <p class="text-dave-stone text-sm">Full progression 400-8000 grit. Mirror polish. Leather strop finish.</p>
+                        </div>
+
+                        <div class="border-b border-dave-stone/30 pb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-display font-bold text-2xl">Repair & Restore</h3>
+                                <span class="font-display font-bold text-2xl text-dave-rust">From R400</span>
+                            </div>
+                            <p class="text-dave-stone text-sm">Chip removal, tip repair, thinning, rehandle quotes.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-6 bg-dave-cream/5 border border-dave-cream/10">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="clock" class="w-6 h-6 text-dave-rust flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h4 class="font-bold mb-1">Turnaround Time</h4>
+                                <p class="text-sm text-dave-stone">3-5 business days. Express service available (24hrs) for 50% surcharge.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="aspect-square bg-dave-rust brutal-shadow-rust p-8 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span class="font-mono text-xs uppercase tracking-widest">SERVICE CARD</span>
+                            <i data-lucide="scissors" class="w-8 h-8"></i>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <h3 class="font-display font-bold text-4xl">DROP OFF<br>YOUR BLADES</h3>
+                            <p class="font-mono text-sm">Tue—Sat, 09:00—16:00<br>23 Roeland Street, Cape Town</p>
+                        </div>
+
+                        <button onclick="openModal('Sharpening Service')" class="w-full bg-dave-ink text-dave-cream py-4 font-bold uppercase tracking-widest hover:bg-dave-cream hover:text-dave-ink transition-colors">
+                            Book Drop-off
+                        </button>
+                    </div>
+
+                    <!-- Floating Badge -->
+                    <div class="absolute -bottom-6 -right-6 bg-dave-cream text-dave-ink p-6 brutal-shadow sticker hoverable">
+                        <div class="text-center">
+                            <div class="font-display font-bold text-3xl">500+</div>
+                            <div class="font-mono text-xs uppercase tracking-widest">Knives Sharpened</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="font-mono text-sm text-dave-rust uppercase tracking-widest">03 / Education</span>
+                <h2 class="mega-text text-6xl md:text-8xl mt-4 mb-6">LEARN THE<br>CRAFT</h2>
+                <p class="text-lg font-light">
+                    Small group classes. All skill levels. Take home what you make.
+                </p>
+            </div>
+
+            <div class="space-y-px bg-dave-ink">
+                <!-- Course 1 -->
+                <div class="bg-dave-cream hoverable group">
+                    <button onclick="toggleAccordion('course1')" class="w-full p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-left">
+                        <div class="flex items-center gap-6">
+                            <span class="font-display font-bold text-4xl text-dave-stone group-hover:text-dave-rust transition-colors">01</span>
+                            <div>
+                                <h3 class="font-display font-bold text-2xl md:text-3xl">Introduction to Bladesmithing</h3>
+                                <p class="text-dave-stone mt-1">Full day beginner course • Max 4 students</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <span class="font-display font-bold text-2xl">R2,800</span>
+                            <i data-lucide="plus" class="w-6 h-6 transform group-hover:rotate-45 transition-transform" id="icon-course1"></i>
+                        </div>
+                    </button>
+                    <div id="course1" class="accordion-content bg-dave-blush/30">
+                        <div class="p-8 pt-0 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">What You'll Learn</h4>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• Forge safety & hammer control</li>
+                                    <li>• Heat treatment basics</li>
+                                    <li>• Grinding & edge geometry</li>
+                                    <li>• Handle fitting</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">Take Home</h4>
+                                <p class="text-sm">A finished paring knife with simple wooden handle. All materials included.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">Next Dates</h4>
+                                <p class="text-sm mb-2">Feb 15, 2025<br>Mar 22, 2025<br>Apr 19, 2025</p>
+                                <button onclick="openModal('Intro to Bladesmithing')" class="text-dave-rust font-bold text-sm uppercase tracking-widest hover:underline">
+                                    Book Now →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 2 -->
+                <div class="bg-dave-cream hoverable group">
+                    <button onclick="toggleAccordion('course2')" class="w-full p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-left">
+                        <div class="flex items-center gap-6">
+                            <span class="font-display font-bold text-4xl text-dave-stone group-hover:text-dave-rust transition-colors">02</span>
+                            <div>
+                                <h3 class="font-display font-bold text-2xl md:text-3xl">Advanced Chef's Knife</h3>
+                                <p class="text-dave-stone mt-1">2-day intensive • Max 2 students</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <span class="font-display font-bold text-2xl">R6,500</span>
+                            <i data-lucide="plus" class="w-6 h-6 transform group-hover:rotate-45 transition-transform" id="icon-course2"></i>
+                        </div>
+                    </button>
+                    <div id="course2" class="accordion-content bg-dave-blush/30">
+                        <div class="p-8 pt-0 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">What You'll Learn</h4>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• Complex forging techniques</li>
+                                    <li>• Precise heat treatment</li>
+                                    <li>• Handle shaping & finishing</li>
+                                    <li>• Edge geometry for kitchen use</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">Take Home</h4>
+                                <p class="text-sm">A 210mm gyuto-style chef's knife with custom handle. Premium materials.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">Next Dates</h4>
+                                <p class="text-sm mb-2">Mar 8-9, 2025<br>May 10-11, 2025</p>
+                                <button onclick="openModal('Advanced Chef Knife')" class="text-dave-rust font-bold text-sm uppercase tracking-widest hover:underline">
+                                    Book Now →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 3 -->
+                <div class="bg-dave-cream hoverable group">
+                    <button onclick="toggleAccordion('course3')" class="w-full p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-left">
+                        <div class="flex items-center gap-6">
+                            <span class="font-display font-bold text-4xl text-dave-stone group-hover:text-dave-rust transition-colors">03</span>
+                            <div>
+                                <h3 class="font-display font-bold text-2xl md:text-3xl">Sharpening Masterclass</h3>
+                                <p class="text-dave-stone mt-1">Half day • Max 6 students</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <span class="font-display font-bold text-2xl">R950</span>
+                            <i data-lucide="plus" class="w-6 h-6 transform group-hover:rotate-45 transition-transform" id="icon-course3"></i>
+                        </div>
+                    </button>
+                    <div id="course3" class="accordion-content bg-dave-blush/30">
+                        <div class="p-8 pt-0 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">What You'll Learn</h4>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• Stone selection & maintenance</li>
+                                    <li>• Proper sharpening angles</li>
+                                    <li>• Repairing damaged edges</li>
+                                    <li>• Stropping & finishing</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">Take Home</h4>
+                                <p class="text-sm">Two sharpening stones (1000/6000 grit) and a strop. Value R800.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-widest text-sm mb-3">Next Dates</h4>
+                                <p class="text-sm mb-2">Monthly • Last Saturday<br>10:00—14:00</p>
+                                <button onclick="openModal('Sharpening Masterclass')" class="text-dave-rust font-bold text-sm uppercase tracking-widest hover:underline">
+                                    Book Now →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-32 bg-dave-blush/30 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4">
+                    <span class="font-mono text-sm text-dave-rust uppercase tracking-widest">04 / About</span>
+                    <h2 class="mega-text text-6xl md:text-7xl mt-4">DAVE</h2>
+                    <div class="w-full h-px bg-dave-ink my-8"></div>
+                    <p class="font-mono text-sm">
+                        Self-taught bladesmith.<br>
+                        5 years full-time.<br>
+                        Former chef. I know what a knife needs to do.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-8 space-y-8">
+                    <p class="text-2xl md:text-3xl font-light leading-relaxed">
+                        I started making knives because I couldn't find one that felt right in my hand. 
+                        Now I make tools for people who use them—chefs, hunters, home cooks, collectors. 
+                        Every blade is a collaboration between me and the person who'll use it.
+                    </p>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8">
+                        <div>
+                            <div class="font-display font-bold text-4xl text-dave-rust">5+</div>
+                            <div class="font-mono text-xs uppercase tracking-widest mt-2">Years Making</div>
+                        </div>
+                        <div>
+                            <div class="font-display font-bold text-4xl text-dave-rust">300+</div>
+                            <div class="font-mono text-xs uppercase tracking-widest mt-2">Knives Sold</div>
+                        </div>
+                        <div>
+                            <div class="font-display font-bold text-4xl text-dave-rust">200+</div>
+                            <div class="font-mono text-xs uppercase tracking-widest mt-2">Students Taught</div>
+                        </div>
+                        <div>
+                            <div class="font-display font-bold text-4xl text-dave-rust">∞</div>
+                            <div class="font-mono text-xs uppercase tracking-widest mt-2">Passion</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-8">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 400'%3E%3Crect fill='%2387A878' width='800' height='400'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='24' fill='%231A1A1A'%3E[WORKSHOP PHOTO]%3C/text%3E%3C/svg%3E" 
+                             alt="Workshop" 
+                             class="w-full h-64 object-cover img-duotone">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dave-ink text-dave-cream py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div class="lg:col-span-2">
+                    <h3 class="font-display font-bold text-4xl mb-6">DAVE KNIVES</h3>
+                    <p class="text-dave-stone max-w-md mb-6">
+                        Handcrafted blades, professional sharpening, and education. 
+                        Based in Cape Town, shipping worldwide.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 border border-dave-cream/30 flex items-center justify-center hover:bg-dave-cream hover:text-dave-ink transition-colors">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 border border-dave-cream/30 flex items-center justify-center hover:bg-dave-cream hover:text-dave-ink transition-colors">
+                            <i data-lucide="youtube" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 border border-dave-cream/30 flex items-center justify-center hover:bg-dave-cream hover:text-dave-ink transition-colors">
+                            <i data-lucide="mail" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-sm mb-6">Visit</h4>
+                    <p class="text-dave-stone text-sm leading-relaxed">
+                        23 Roeland Street<br>
+                        Cape Town, 8001<br>
+                        South Africa<br><br>
+                        Tue—Sat: 09:00—16:00<br>
+                        Or by appointment
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-sm mb-6">Contact</h4>
+                    <p class="text-dave-stone text-sm leading-relaxed">
+                        hello@daveknives.co.za<br>
+                        +27 72 123 4567<br><br>
+                        <button onclick="openModal()" class="text-dave-cream font-bold hover:text-dave-rust transition-colors">
+                            Send message →
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            <div class="border-t border-dave-cream/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="font-mono text-xs text-dave-stone">© 2024 Dave Knives. All rights reserved.</p>
+                <div class="flex gap-6 font-mono text-xs text-dave-stone">
+                    <a href="#" class="hover:text-dave-cream transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-dave-cream transition-colors">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-dave-ink/90 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-4">
+            <div class="bg-dave-cream p-8 brutal-shadow relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 hover:text-dave-rust transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                
+                <h3 class="font-display font-bold text-3xl mb-2">Get in Touch</h3>
+                <p class="text-dave-stone mb-6">I'll respond within 24 hours.</p>
+                
+                <form onsubmit="handleSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block font-mono text-xs uppercase tracking-widest mb-2">Name</label>
+                        <input type="text" required class="w-full bg-transparent border-2 border-dave-ink px-4 py-3 focus:outline-none focus:border-dave-rust transition-colors">
+                    </div>
+                    <div>
+                        <label class="block font-mono text-xs uppercase tracking-widest mb-2">Email</label>
+                        <input type="email" required class="w-full bg-transparent border-2 border-dave-ink px-4 py-3 focus:outline-none focus:border-dave-rust transition-colors">
+                    </div>
+                    <div>
+                        <label class="block font-mono text-xs uppercase tracking-widest mb-2">Interest</label>
+                        <select id="modal-interest" class="w-full bg-transparent border-2 border-dave-ink px-4 py-3 focus:outline-none focus:border-dave-rust transition-colors">
+                            <option>Custom Knife</option>
+                            <option>Sharpening Service</option>
+                            <option>Course Booking</option>
+                            <option>General Enquiry</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-mono text-xs uppercase tracking-widest mb-2">Message</label>
+                        <textarea class="w-full bg-transparent border-2 border-dave-ink px-4 py-3 focus:outline-none focus:border-dave-rust transition-colors h-24"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-dave-ink text-dave-cream py-4 font-bold uppercase tracking-widest hover:bg-dave-rust transition-colors">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-8 right-8 bg-dave-rust text-dave-cream px-6 py-4 brutal-shadow z-[101] transform translate-y-32 transition-transform duration-300">
+        <div class="font-display font-bold">Message sent!</div>
+        <div class="font-mono text-xs">I'll be in touch soon.</div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor-dot');
+        const hoverables = document.querySelectorAll('.hoverable');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        hoverables.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Mobile Menu
+        function toggleMenu() {
+            document.getElementById('mobile-menu').classList.toggle('translate-x-full');
+        }
+
+        // Modal
+        function openModal(subject = '') {
+            document.getElementById('modal').classList.remove('hidden');
+            if (subject) {
+                document.getElementById('modal-interest').value = subject;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            closeModal();
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-32');
+            setTimeout(() => toast.classList.add('translate-y-32'), 3000);
+        }
+
+        // Accordion
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            content.classList.toggle('active');
+            if (content.classList.contains('active')) {
+                icon.style.transform = 'rotate(45deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Animate sections
+        gsap.from("#blades .bg-dave-cream", {
+            scrollTrigger: { trigger: "#blades", start: "top 80%" },
+            y: 100,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1
+        });
+
+        gsap.from("#courses .bg-dave-cream", {
+            scrollTrigger: { trigger: "#courses", start: "top 80%" },
+            y: 50,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.1
+        });
+    </script>
+</body>
+</html>
